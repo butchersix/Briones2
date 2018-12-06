@@ -3,6 +3,8 @@ package com.example.jhsbriones.briones;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -59,6 +61,7 @@ public class SecondActivity extends AppCompatActivity {
     public void initializeButtons() {
         int[] btnIDs = {R.string.A, R.string.B, R.string.C, R.string.D, R.string.E, R.string.F, R.string.G, R.string.H};
         int[] initCounts = {0, 0, 0, 0, 0, 0, 0, 0};
+        String[] btnValues = new String[16]; // string array to store original btn values
         Random rand = new Random();
         int randn = 0;
         int count = lytButtons.getChildCount();
@@ -74,6 +77,7 @@ public class SecondActivity extends AppCompatActivity {
                     randn = rand.nextInt(btnIDs.length);
                     if(initCounts[randn] < 2) {
                         ((Button) currentBtn).setText(btnIDs[randn]);
+                        btnValues[4*i + j] = getApplication().getApplicationContext().getResources().getString(btnIDs[randn]);
                         initCounts[randn]++;
                         break;
                     }
@@ -81,10 +85,13 @@ public class SecondActivity extends AppCompatActivity {
             }
         }
 
-        String a = "";
-        for(int x = 0; x < initCounts.length; x++) {
-            a += String.valueOf(initCounts[x]);
-        }
-        Toast.makeText(this, a, Toast.LENGTH_SHORT).show();
+        // debug btn value count
+        Toast.makeText(this, TextUtils.join("", btnValues), Toast.LENGTH_SHORT).show();
+        Log.d("debugger", TextUtils.join("", btnValues));
+//        String a = "";
+//        for(int x = 0; x < initCounts.length; x++) {
+//            a += String.valueOf(initCounts[x]);
+//        }
+//        Toast.makeText(this, a, Toast.LENGTH_SHORT).show();
     }
 }
