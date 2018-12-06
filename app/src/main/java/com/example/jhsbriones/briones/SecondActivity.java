@@ -49,7 +49,7 @@ public class SecondActivity extends AppCompatActivity {
                     btnCount = ((LinearLayout) rowLayout).getChildCount();
                     for(int j = 0; j < btnCount; j++) {
                         currentBtn = (Button)((LinearLayout) rowLayout).getChildAt(j);
-                        ((Button) currentBtn).setText(R.string.unknown);
+//                        ((Button) currentBtn).setText(R.string.unknown);
                     }
                 }
             }
@@ -57,8 +57,8 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     public void initializeButtons() {
-        int[] btnIDs = {R.string.A, R.string.B, R.string.C, R.string.D, R.string.E, R.string.F};
-        int[] initCounts = {0, 0, 0, 0, 0, 0};
+        int[] btnIDs = {R.string.A, R.string.B, R.string.C, R.string.D, R.string.E, R.string.F, R.string.G, R.string.H};
+        int[] initCounts = {0, 0, 0, 0, 0, 0, 0, 0};
         Random rand = new Random();
         int randn = 0;
         int count = lytButtons.getChildCount();
@@ -68,27 +68,23 @@ public class SecondActivity extends AppCompatActivity {
             rowLayout = (LinearLayout) lytButtons.getChildAt(i);
             btnCount = ((LinearLayout) rowLayout).getChildCount();
             for(int j = 0; j < btnCount; j++) {
-                String a = "";
-                for(int x = 0; x < initCounts.length; x++) {
-                    a += String.valueOf(initCounts[x]);
-                }
-                Toast.makeText(this, a, Toast.LENGTH_SHORT).show();
-
                 currentBtn = (Button)((LinearLayout) rowLayout).getChildAt(j);
-                randn = rand.nextInt(btnIDs.length);
 
-                if(initCounts[randn] < 2) {
-                    ((Button) currentBtn).setText(btnIDs[randn]);
-                    initCounts[randn]++;
-                }
-                else {
-                    for(int k=0; k < initCounts.length; k++) {
-                        ((Button) currentBtn).setText(btnIDs[k]);
-                        initCounts[k]++;
+                while(true) {
+                    randn = rand.nextInt(btnIDs.length);
+                    if(initCounts[randn] < 2) {
+                        ((Button) currentBtn).setText(btnIDs[randn]);
+                        initCounts[randn]++;
                         break;
                     }
                 }
             }
         }
+
+        String a = "";
+        for(int x = 0; x < initCounts.length; x++) {
+            a += String.valueOf(initCounts[x]);
+        }
+        Toast.makeText(this, a, Toast.LENGTH_SHORT).show();
     }
 }
