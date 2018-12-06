@@ -36,13 +36,13 @@ public class SecondActivity extends AppCompatActivity {
 
             @Override
             public void onTick(long millisUntilFinished) {
-                txtTimer.setText(String.valueOf(counter));
+                txtTimer.setText(String.format("%02d", counter));
                 counter--;
             }
 
             @Override
             public void onFinish() {
-                txtTimer.setText(String.valueOf(counter));
+                txtTimer.setText(String.format("%02d", counter));
                 int count = lytButtons.getChildCount();
                 int btnCount = 0;
                 View rowLayout = null, currentBtn = null;
@@ -51,7 +51,7 @@ public class SecondActivity extends AppCompatActivity {
                     btnCount = ((LinearLayout) rowLayout).getChildCount();
                     for(int j = 0; j < btnCount; j++) {
                         currentBtn = (Button)((LinearLayout) rowLayout).getChildAt(j);
-//                        ((Button) currentBtn).setText(R.string.unknown);
+                        ((Button) currentBtn).setText(R.string.unknown);
                     }
                 }
             }
