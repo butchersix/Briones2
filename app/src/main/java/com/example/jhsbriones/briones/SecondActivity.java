@@ -1,8 +1,8 @@
 package com.example.jhsbriones.briones;
 
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +26,8 @@ public class SecondActivity extends AppCompatActivity {
     private int[] initCounts = {0, 0, 0, 0, 0, 0, 0, 0};
     private String[] btnValues = new String[numButtons]; // string array to store original btn values
     private Btns[] btns = new Btns[numButtons];
+    private boolean pending = false, reset_flag = false;
+    private int reset_counter = 0;
     private ArrayList<Integer> currentPair = new ArrayList<Integer>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +104,7 @@ public class SecondActivity extends AppCompatActivity {
         }
 
         // debug btn value count
-        Toast.makeText(this, TextUtils.join("", btnValues), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, TextUtils.join("", btnValues), Toast.LENGTH_SHORT).show();
         Log.d("debugger", TextUtils.join("", btnValues));
 //        String a = "";
 //        for(int x = 0; x < initCounts.length; x++) {
@@ -112,24 +114,88 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     public void btnChoice(View v) { // function to be executed when clicked
-        int btnIndex= Integer.parseInt(v.getResources().getResourceName(v.getId()).split("_")[1]) - 1;
-        if(btns[btnIndex].isNotPicked()) {
-            btns[btnIndex].updateStatus(Status.FIRST);
+        int btnIndex = Integer.parseInt(v.getResources().getResourceEntryName(v.getId()).split("_")[1]) - 1;
+//        Toast.makeText(this, String.valueOf(btnIndex), Toast.LENGTH_SHORT).show();
+        if(!pending) {
+            btns[btnIndex].updateStatus(Status.PENDING);
             currentPair.add(btnIndex);
+            pending = true;
+            ((Button) v).setText(btnValues[btnIndex]);
+            refresh();
+            reset_counter = 0;
+        }
+        else {
+            currentPair.add(btnIndex);
+            Toast.makeText(this, String.format("%d %d", currentPair.get(0), currentPair.get(1)), Toast.LENGTH_SHORT).show();
+            ((Button) v).setText(btnValues[btnIndex]);
+            if(checkMatchPair()) {
+                updateBtnPairColor(Status.MATCHED);
+                refresh();
+                resetPair();
+            }
+            else {
+                updateBtnPairColor(Status.WRONG);
+                refresh();
+                resetPair();
+                reset_flag = true;
+            }
+            pending = false;
+        }
+    }
+    
+    public void refresh() {
+        View currentBtn = null;
+        for (Btns i : btns) {
+            currentBtn = findViewById(i.getButtonID());
+            if(i.isCheckStatus(Status.NOT_PICKED)) {
+                currentBtn.setBackgroundColor(getResources().getColor(R.color.colorGray2));
+            }
+            else if(i.isCheckStatus(Status.PENDING)) {
+                currentBtn.setBackgroundColor(getResources().getColor(R.color.colorHover));
+            }
+            else if(i.isCheckStatus(Status.WRONG)) {
+                currentBtn.setBackgroundColor(getResources().getColor(R.color.colorRed));
+                if(reset_counter < 2 && reset_flag) {
+                        ((Button) currentBtn).setText(R.string.unknown);
+                        currentBtn.setBackgroundColor(getResources().getColor(R.color.colorGray2));
+                        i.updateStatus(Status.NOT_PICKED);
+                        reset_counter++;
+                        if(reset_counter == 2)
+                            reset_flag = false;
+                }
+            }
+            else if(i.isCheckStatus(Status.MATCHED)) {
+                currentBtn.setBackgroundColor(getResources().getColor(R.color.colorGreen));
+            }
+        }
+    }
 
-        }
-        else if(btns[btnIndex].isFirst()) {
-            btns[btnIndex].updateStatus(Status.SECOND);
-            currentPair.add(btnIndex);
-        }
-        else if(btns[btnIndex].isSecond()) {
-            btns[btnIndex].updateStatus(Status.MATCHED);
+    public void updateBtnPairColor(Status status) {
+        View currentBtn = null;
+        for (int i : currentPair) {
+            currentBtn = findViewById(btnID.get(i));
+            if(status == Status.MATCHED) {
+                currentBtn.setBackgroundColor(getResources().getColor(R.color.colorGreen));
+            }
+            else {
+                currentBtn.setBackgroundColor(getResources().getColor(R.color.colorRed));
+            }
         }
     }
 
     public boolean checkMatchPair() {
-
-        return false;
+        if(btnValues[currentPair.get(0)] == btnValues[currentPair.get(1)]) {
+            for ( int i : currentPair) {
+                btns[i].updateStatus(Status.MATCHED);
+            }
+            return true;
+        }
+        else {
+            for ( int i : currentPair) {
+                btns[i].updateStatus(Status.WRONG);
+            }
+            return false;
+        }
     }
 
     public void resetPair() {

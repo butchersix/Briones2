@@ -11,41 +11,18 @@ public class Btns {
         this.btnStatus = Status.NOT_PICKED;
     }
 
+    public int getButtonID() {
+        return this.btnID;
+    }
+
 //    public int getBtnIndex() {
 //        return this.index;
 //    }
 
-    public boolean isFirst() {
-        if(this.btnStatus == Status.FIRST) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    public boolean isSecond() {
-        if(this.btnStatus == Status.SECOND) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    public boolean isMatched() {
-        if (this.btnStatus == Status.MATCHED) {
+    public boolean isCheckStatus(Status status) {
+        if (this.btnStatus == status) {
             return true;
         } else {
-            return false;
-        }
-    }
-
-    public boolean isNotPicked() {
-        if(this.btnStatus == Status.NOT_PICKED) {
-            return true;
-        }
-        else {
             return false;
         }
     }
@@ -56,5 +33,5 @@ public class Btns {
 }
 
 enum Status {
-    MATCHED, FIRST, SECOND, NOT_PICKED
+    MATCHED, WRONG, PENDING, NOT_PICKED
 }

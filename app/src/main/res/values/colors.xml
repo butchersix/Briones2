@@ -12,4 +12,7 @@
     <color name="colorWhite">#ffffff</color>
     <color name="colorGoldish">#e7d9a7</color>
     <color name="colorLightBlue">#4cbcfd</color>
+    <color name="colorRed">#dc3e46</color>
+    <color name="colorGreen">#75d279</color>
+    <color name="colorHover">#c29468</color>
 </resources>
