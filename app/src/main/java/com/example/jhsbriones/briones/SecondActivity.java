@@ -2,6 +2,7 @@ package com.example.jhsbriones.briones;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -13,12 +14,14 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class SecondActivity extends AppCompatActivity {
 
     TextView txtTimer, txtCorrect, txtIncorrect;
     LinearLayout lytButtons;
     private int counter = 3;
+    private int correct = 0, wrong = 0;
     private int numButtons = 16;
 
     private ArrayList<Integer> btnID = new ArrayList<Integer>();
@@ -27,7 +30,7 @@ public class SecondActivity extends AppCompatActivity {
     private String[] btnValues = new String[numButtons]; // string array to store original btn values
     private Btns[] btns = new Btns[numButtons];
     private boolean pending = false, reset_flag = false;
-    private int reset_counter = 0;
+    private int reset_counter = 0, btnIndex;
     private ArrayList<Integer> currentPair = new ArrayList<Integer>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,32 +116,63 @@ public class SecondActivity extends AppCompatActivity {
 //        Toast.makeText(this, a, Toast.LENGTH_SHORT).show();
     }
 
+    // reset after 2 seconds have passed
+    CountDownTimer resetTimer = null;
+
     public void btnChoice(View v) { // function to be executed when clicked
-        int btnIndex = Integer.parseInt(v.getResources().getResourceEntryName(v.getId()).split("_")[1]) - 1;
-//        Toast.makeText(this, String.valueOf(btnIndex), Toast.LENGTH_SHORT).show();
+        btnIndex = Integer.parseInt(v.getResources().getResourceEntryName(v.getId()).split("_")[1]) - 1;
+//        Toast.makeText(this, String.valueOf(btnIndex), Toast.LENGTH_SHORT).show()
+
+        if(resetTimer != null)
+            resetTimer.cancel();
+
         if(!pending) {
             btns[btnIndex].updateStatus(Status.PENDING);
             currentPair.add(btnIndex);
             pending = true;
             ((Button) v).setText(btnValues[btnIndex]);
+            reset_flag = true;
             refresh();
-            reset_counter = 0;
+            reset_flag = false;
+//            Toast.makeText(this, btns[btnIndex].getStatus(), Toast.LENGTH_SHORT).show();
         }
         else {
             currentPair.add(btnIndex);
-            Toast.makeText(this, String.format("%d %d", currentPair.get(0), currentPair.get(1)), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, String.format("%d %d", currentPair.get(0), currentPair.get(1)), Toast.LENGTH_SHORT).show();
             ((Button) v).setText(btnValues[btnIndex]);
+//            if(checkMatchSelf()) {
+//                updateDefault();
+//                refresh();
+//                resetPair();
+//                reset_flag = true;
+//            }
             if(checkMatchPair()) {
                 updateBtnPairColor(Status.MATCHED);
                 refresh();
+                correct++;
+                txtCorrect.setText(String.format("%02d", correct));
                 resetPair();
             }
             else {
                 updateBtnPairColor(Status.WRONG);
                 refresh();
+                wrong++;
+                txtIncorrect.setText(String.format("%02d", wrong));
                 resetPair();
-                reset_flag = true;
+                resetTimer = new CountDownTimer(2000, 1000) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        reset_flag = true;
+                        refresh();
+                        reset_flag = false;
+                    }
+                }.start();
             }
+//            Toast.makeText(SecondActivity.this, btns[btnIndex].getStatus(), Toast.LENGTH_SHORT).show();
             pending = false;
         }
     }
@@ -155,13 +189,10 @@ public class SecondActivity extends AppCompatActivity {
             }
             else if(i.isCheckStatus(Status.WRONG)) {
                 currentBtn.setBackgroundColor(getResources().getColor(R.color.colorRed));
-                if(reset_counter < 2 && reset_flag) {
-                        ((Button) currentBtn).setText(R.string.unknown);
-                        currentBtn.setBackgroundColor(getResources().getColor(R.color.colorGray2));
-                        i.updateStatus(Status.NOT_PICKED);
-                        reset_counter++;
-                        if(reset_counter == 2)
-                            reset_flag = false;
+                if(reset_flag) {
+                    ((Button) currentBtn).setText(R.string.unknown);
+                    currentBtn.setBackgroundColor(getResources().getColor(R.color.colorGray2));
+                    i.updateStatus(Status.NOT_PICKED);
                 }
             }
             else if(i.isCheckStatus(Status.MATCHED)) {
@@ -176,11 +207,18 @@ public class SecondActivity extends AppCompatActivity {
             currentBtn = findViewById(btnID.get(i));
             if(status == Status.MATCHED) {
                 currentBtn.setBackgroundColor(getResources().getColor(R.color.colorGreen));
+                currentBtn.setEnabled(false);
             }
             else {
                 currentBtn.setBackgroundColor(getResources().getColor(R.color.colorRed));
             }
         }
+    }
+
+    public void updateDefault() {
+        View currentBtn = null;
+        currentBtn = findViewById(btnID.get(currentPair.get(0)));
+        currentBtn.setBackgroundColor(getResources().getColor(R.color.colorGray2));
     }
 
     public boolean checkMatchPair() {
@@ -194,6 +232,17 @@ public class SecondActivity extends AppCompatActivity {
             for ( int i : currentPair) {
                 btns[i].updateStatus(Status.WRONG);
             }
+            return false;
+        }
+    }
+
+    public boolean checkMatchSelf() {
+        if(currentPair.get(0) == currentPair.get(1)) {
+            btns[currentPair.get(0)].updateStatus(Status.NOT_PICKED);
+            return true;
+        }
+        else {
+            btns[currentPair.get(0)].updateStatus(Status.NOT_PICKED);
             return false;
         }
     }

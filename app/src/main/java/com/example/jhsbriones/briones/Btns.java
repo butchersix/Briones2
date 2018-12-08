@@ -30,6 +30,10 @@ public class Btns {
     public void updateStatus(Status status) {
         this.btnStatus = status;
     }
+
+    public String getStatus() {
+        return this.btnStatus.toString();
+    }
 }
 
 enum Status {
