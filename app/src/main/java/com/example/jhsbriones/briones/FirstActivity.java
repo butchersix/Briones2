@@ -14,7 +14,7 @@ public class FirstActivity extends AppCompatActivity {
     }
 
     public void startGame(View w) {
-        startActivity(new Intent(FirstActivity.this, SecondActivity.class));
+        startActivity(new Intent(FirstActivity.this, ThirdActivity.class));
     }
 
     public void quit(View v) {

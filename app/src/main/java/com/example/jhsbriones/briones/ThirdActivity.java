@@ -1,9 +1,8 @@
 package com.example.jhsbriones.briones;
 
-import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -16,19 +15,19 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
-public class SecondActivity extends AppCompatActivity {
+public class ThirdActivity extends AppCompatActivity {
 
     TextView txtTimer, txtCorrect, txtIncorrect;
     LinearLayout lytButtons;
-    private int counter = 3;
+    private int counter = 5;
     private int correct = 0, wrong = 0;
-    private int numButtons = 16;
+    private int numButtons = 24;
 
     private ArrayList<Integer> btnID = new ArrayList<Integer>();
-    private int[] btnIDs = {R.string.A, R.string.B, R.string.C, R.string.D, R.string.E, R.string.F, R.string.G, R.string.H};
-    private int[] initCounts = {0, 0, 0, 0, 0, 0, 0, 0};
+    private int[] btnIDs = {R.string.one, R.string.two, R.string.three, R.string.four, R.string.five, R.string.six,
+                            R.string.seven, R.string.eight, R.string.nine, R.string.ten, R.string.eleven, R.string.twelve};
+    private int[] initCounts = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     private String[] btnValues = new String[numButtons]; // string array to store original btn values
     private Btns[] btns = new Btns[numButtons];
     private boolean pending = false, reset_flag = false;
@@ -37,7 +36,7 @@ public class SecondActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_second);
+        setContentView(R.layout.activity_third);
         txtTimer = findViewById(R.id.textTimer);;
         txtCorrect = findViewById(R.id.textCorrect);;
         txtIncorrect = findViewById(R.id.textIncorrect);
@@ -70,7 +69,7 @@ public class SecondActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         initializeButtons();
-        new CountDownTimer(3000, 1000) {
+        new CountDownTimer(5000, 1000) {
 
             @Override
             public void onTick(long millisUntilFinished) {
@@ -89,8 +88,13 @@ public class SecondActivity extends AppCompatActivity {
                     rowLayout = (LinearLayout) lytButtons.getChildAt(i);
                     btnCount = ((LinearLayout) rowLayout).getChildCount();
                     for(int j = 0; j < btnCount; j++) {
-                        currentBtn = (Button)((LinearLayout) rowLayout).getChildAt(j);
-                        ((Button) currentBtn).setText(R.string.unknown);
+                        if(i == btnCount- 1 && j == btnCount- 1) {
+
+                        }
+                        else {
+                            currentBtn = (Button)((LinearLayout) rowLayout).getChildAt(j);
+                            ((Button) currentBtn).setText(R.string.unknown);
+                        }
                     }
                 }
             }
@@ -108,24 +112,28 @@ public class SecondActivity extends AppCompatActivity {
             rowLayout = (LinearLayout) lytButtons.getChildAt(i);
             btnCount = ((LinearLayout) rowLayout).getChildCount();
             for(int j = 0; j < btnCount; j++) {
-                currentBtn = (Button)((LinearLayout) rowLayout).getChildAt(j);
+                if(i == btnCount - 1 && j == btnCount- 1) {
+                }
+                else {
+                    currentBtn = (Button)((LinearLayout) rowLayout).getChildAt(j);
 
-                // store every button to a list
-                btnID.add(currentBtn.getId());
+                    // store every button to a list
+                    btnID.add(currentBtn.getId());
 
-                while(true) { // randomizer part
-                    randn = rand.nextInt(btnIDs.length);
-                    if(initCounts[randn] < 2) {
+                    while(true) { // randomizer part
+                        randn = rand.nextInt(btnIDs.length);
+                        if(initCounts[randn] < 2) {
 
-                        // create new btns instances for each button in recording their statuses
-                        currentIndex = 4*i + j;
-                        btns[currentIndex] = new Btns(currentBtn.getId());
+                            // create new btns instances for each button in recording their statuses
+                            currentIndex = 5*i + j;
+                            btns[currentIndex] = new Btns(currentBtn.getId());
 
-                        // set value for btn after getting randomized value
-                        ((Button) currentBtn).setText(btnIDs[randn]);
-                        btnValues[currentIndex] = getApplication().getApplicationContext().getResources().getString(btnIDs[randn]);
-                        initCounts[randn]++;
-                        break;
+                            // set value for btn after getting randomized value
+                            ((Button) currentBtn).setText(btnIDs[randn]);
+                            btnValues[currentIndex] = getApplication().getApplicationContext().getResources().getString(btnIDs[randn]);
+                            initCounts[randn]++;
+                            break;
+                        }
                     }
                 }
             }
@@ -201,7 +209,7 @@ public class SecondActivity extends AppCompatActivity {
             pending = false;
         }
     }
-    
+
     public void refresh() {
         View currentBtn = null;
         for (Btns i : btns) {
